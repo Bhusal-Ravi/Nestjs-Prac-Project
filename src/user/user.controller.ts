@@ -9,12 +9,12 @@ export class UserController {
 
     }
     @Post('/createuser')
-    async createUser(@Body() body:{username:string,password:string},@Res() res:Response){
-        if(!body.username || !body.password){
+    async createUser(@Body() body:{username:string,password:string,region:string},@Res() res:Response){
+        if(!body.username || !body.password || !body.region){
             throw new BadRequestException ("Provide necessary information required")
         }
 
-        const result= await this.userService.setUser({username:body.username,password:body.password})
+        const result= await this.userService.setUser({username:body.username,password:body.password,region:body.region})
     
         return res.json({success:true,message:"User created"})
         
@@ -22,12 +22,12 @@ export class UserController {
     }
 
     @Put('/login')
-    async loginUser(@Body() body:{username:string,password:string}, @Res() res:Response){
+    async loginUser(@Body() body:{username:string,password:string,region:"string"}, @Res() res:Response){
         if(!body.username || !body.password){
             throw new BadRequestException ("Provide necessary information required")
         }
 
-        const sessionToken= await this.userService.loginUser({username:body.username,password:body.password})
+        const sessionToken= await this.userService.loginUser({username:body.username,password:body.password,region:body.region})
 
          res.cookie('sessionToken', sessionToken, {
     httpOnly: true,

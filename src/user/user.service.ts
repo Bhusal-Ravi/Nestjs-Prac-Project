@@ -11,25 +11,29 @@ dotenv.config()
 export class UserService {
    constructor (
      @Inject('USER_REPOSITORY')
-    private readonly userRepository:Repository<User>
+    private readonly userRepository:Repository<User>,
+
+    @Inject('USA_USER_REPOSITORY')
+    private readonly usa_userReposiroty:Repository<User>
+    
+
    ){}
    
 
-    private username:string=""
-    private password:string=""
     
     
 
-    async setUser({username,password}:{username:string,password:string}){
-        this.username=username
-        this.password=password
+    async setUser({username,password,region}:{username:string,password:string,region:string}){
+        if(!region) throw new BadRequestException('Provide all required fields')
 
-        const password_hash = await bcrypt.hash(this.password,10)
-        this.password = password_hash
-        const createUser= await this.userRepository.insert({
-                                    username:this.username,
-                                    password:this.password
-        }
+        const password_hash = await bcrypt.hash(password,10)
+
+        const repository = region==='usa' ? this.usa_userReposiroty : this.userRepository
+
+        const createUser= await repository.insert({
+                                    username:username,
+                                    password:password_hash
+       }
         )
 
         
@@ -39,19 +43,26 @@ export class UserService {
 
         }
 
-    async loginUser({username,password}:{username:string,password:string}){
-        this.username=username
-        this.password=password
+    async loginUser({username,password,region}:{username:string,password:string,region:string}){
+      
         
-
-
-        const user= await this.userRepository.find({
+        if(!region) throw new BadRequestException('Provide all required fields')
+        let user:User | null
+       if(region==='usa'){
+        user= await this.usa_userReposiroty.findOne({
             where:{username}
         })
+       }else {
+        user= await this.userRepository.findOne({
+            where:{username}
+        })
+       }
+        
+        if(!user) throw new BadRequestException('User not found')
 
-        const db_Password= user[0].password
+        const db_Password= user.password
 
-        const match= await bcrypt.compare(this.password,db_Password)
+        const match= await bcrypt.compare(password,db_Password)
 
         if(!match){
             throw new BadRequestException('Incorrect Username or Password')
@@ -60,7 +71,8 @@ export class UserService {
 
         const payload= {
         username:username,
-        userid:user[0].id
+        userid:user.id,
+        region:region
         }
 
         const token= jwt.sign(payload,process.env.SECRET_KEY,{
