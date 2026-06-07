@@ -1,22 +1,21 @@
-import { Stats } from "src/stats/stats.entity"
 import { User } from "src/user/user.entity"
+import { Url } from "src/url/url.entity"
 import { Entity, PrimaryGeneratedColumn, Column, ForeignKey, ManyToOne, JoinColumn, OneToOne } from "typeorm"
 
 @Entity()
-export class Url {
+export class Stats {
     @PrimaryGeneratedColumn()
     id!: number
 
-    @Column()
-    originalUrl!: string
+    @OneToOne(()=>Url,(url)=>url.stats)
+    @JoinColumn({name:'url_id'})
+    url!:Url
 
-    @Column()
-    shortUrl!: string
+    @Column({default:0})
+    count!: number
+    
 
-    @OneToOne(()=>Stats,(stats)=>stats.url)
-    stats!:Stats
-
-    @ManyToOne(()=>User,(user)=>user.urls)
+    @ManyToOne(()=>User,(user)=>user.stats)
     @JoinColumn({name:'user_id'})
     user!: User
 

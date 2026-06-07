@@ -6,6 +6,13 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+type AuthRequest = Request &  {
+    payload?:{
+        username:string,
+        userid:number
+    }
+}
+
 @Controller('url')
 export class UrlController {
 
@@ -15,26 +22,21 @@ export class UrlController {
     constructor(private readonly  urlService:UrlService) {}
 
     @Post('/shorten')
-    async shorten(@Body() body:{url:string},@Res() res:Response, @Req() req:Request){
+    async shorten(@Body() body:{url:string},@Res() res:Response, @Req() req:AuthRequest){
 
+        const payload= req.payload
+        if(!payload || !payload.userid || !payload.username) throw new BadRequestException("Provide necessary information")
         
-
-        const sessionToken= req.cookies.sessionToken
         
-        const payload= jwt.verify(sessionToken,process.env.SECRET_KEY)
-
-        if(!payload) throw new  UnauthorizedException( 'Not authozied to perform this action')
-
-            console.log(payload)
-        this.username=payload.username
-        this.userid=payload.userid
+        
+        
 
         if(!body.url){
             throw new BadRequestException('Provide a valid Url')
         }
         const originalUrl= body.url
         const fullUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl}`
-        const shortUrl=  await this.urlService.shortenUrl(fullUrl,this.userid)
+        const shortUrl=  await this.urlService.shortenUrl(fullUrl,payload.userid)
          console.log(shortUrl)
 
         return res.json({shortUrl:`http://localhost:3000/${shortUrl}`})

@@ -7,10 +7,11 @@ import { UserModule } from './user/user.module';
 
 import { DatabaseModule } from './database/database.module';
 import { Url } from './url/url.entity';
+import { StatsModule } from './stats/stats.module';
 
 
 @Module({
-  imports: [ UrlModule, UserModule, DatabaseModule],
+  imports: [ UrlModule, UserModule, DatabaseModule, StatsModule],
   controllers: [AppController],
   providers: [AppService],
   

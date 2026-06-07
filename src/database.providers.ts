@@ -2,6 +2,8 @@
 import { DataSource, Repository } from 'typeorm';
 import { Url } from './url/url.entity';
 import { User } from './user/user.entity';
+import { Stats } from './stats/stats.entity';
+
 
 export const databaseProviders = [
   {
@@ -20,7 +22,7 @@ export const databaseProviders = [
         username,
         password,
         database,
-        entities: [Url, User],
+        entities: [Url, User,Stats],
         synchronize: true,
       });
 
@@ -37,5 +39,12 @@ export const databaseProviders = [
     useFactory: (dataSource: DataSource): Repository<User> =>
       dataSource.getRepository(User),
     inject: ['DATA_SOURCE'],
+  },{
+    
+    provide: 'STATS_REPOSITORY',
+    useFactory: (dataSource: DataSource): Repository<Stats> =>
+      dataSource.getRepository(Stats),
+    inject: ['DATA_SOURCE'],
+  
   }
 ];

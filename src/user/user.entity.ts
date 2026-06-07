@@ -1,3 +1,4 @@
+import { Stats } from "src/stats/stats.entity"
 import { Url } from "src/url/url.entity"
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
 
@@ -15,5 +16,6 @@ export class User {
     @OneToMany(()=>Url,(url)=>url.user)
     urls!:Url[];
 
-  
+    @OneToMany(()=>Stats,(stats)=>stats.user)
+    stats!:Stats[]
 }   
