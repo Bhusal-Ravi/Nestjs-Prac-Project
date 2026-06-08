@@ -1,24 +1,17 @@
-import { BadRequestException, Body, Controller, Get, Param, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { UrlService } from './url.service';
-import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
-
-dotenv.config()
 
 type AuthRequest = Request &  {
     payload?:{
         username:string,
-        userid:number
+        userid:number,
+        region:string
     }
 }
 
 @Controller('url')
 export class UrlController {
-
-    
-    private  username:string=""
-    private  userid:number=0
     constructor(private readonly  urlService:UrlService) {}
 
     @Post('/shorten')
@@ -36,7 +29,7 @@ export class UrlController {
         }
         const originalUrl= body.url
         const fullUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl}`
-        const shortUrl=  await this.urlService.shortenUrl(fullUrl,payload.userid)
+        const shortUrl=  await this.urlService.shortenUrl(fullUrl,payload.userid,payload.region)
          console.log(shortUrl)
 
         return res.json({shortUrl:`http://localhost:3000/${shortUrl}`})
@@ -45,22 +38,18 @@ export class UrlController {
     @Get(':shorturl')
     async getshorten(@Param('shorturl') shorturl:string,@Req() req:Request ,@Res() res:Response){
 
-        const sessionToken= req.cookies.sessionToken
-        
-        const payload= jwt.verify(sessionToken,process.env.SECRET_KEY)
+        const payload= (req as AuthRequest).payload
 
-        if(!payload) throw new  UnauthorizedException( 'Not authozied to perform this action')
+        if(!payload) throw new BadRequestException( 'Provide necessary information')
 
             console.log(payload)
-        this.username=payload.username
-        this.userid=payload.userid
 
         if(!shorturl){
             throw new BadRequestException('Short Url is Needed'
             )
         }
 
-        const redirectUrl= await this.urlService.getShortUrl(shorturl,this.userid)
+        const redirectUrl= await this.urlService.getShortUrl(shorturl,payload.userid,payload.region)
         return res.redirect(redirectUrl)
     }
 
