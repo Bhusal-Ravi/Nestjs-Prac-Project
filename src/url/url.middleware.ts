@@ -21,6 +21,7 @@ export class UrlMiddleware implements NestMiddleware {
     
             
             req.payload=payload
+            req.region=payload.region
 
     next();
   }

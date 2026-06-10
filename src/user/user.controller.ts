@@ -6,8 +6,8 @@ import type { Response } from 'express';
 @Controller('user')
 export class UserController {
     constructor(private readonly userService:UserService ){
-
     }
+
     @Post('/createuser')
     async createUser(@Body() body:{username:string,password:string,region:string},@Res() res:Response){
         if(!body.username || !body.password || !body.region){
@@ -18,8 +18,8 @@ export class UserController {
     
         return res.json({success:true,message:"User created"})
         
-        
     }
+
 
     @Put('/login')
     async loginUser(@Body() body:{username:string,password:string,region:"string"}, @Res() res:Response){
@@ -36,7 +36,7 @@ export class UserController {
     return res.json({
             success:true,
             message:"Logged in successfully"
-    })
+    });  
 }
        
 

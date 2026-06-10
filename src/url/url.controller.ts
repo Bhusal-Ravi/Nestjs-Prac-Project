@@ -29,7 +29,7 @@ export class UrlController {
         }
         const originalUrl= body.url
         const fullUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl}`
-        const shortUrl=  await this.urlService.shortenUrl(fullUrl,payload.userid,payload.region)
+        const shortUrl=  await this.urlService.shortenUrl(fullUrl,payload.userid)
          console.log(shortUrl)
 
         return res.json({shortUrl:`http://localhost:3000/${shortUrl}`})
@@ -49,7 +49,7 @@ export class UrlController {
             )
         }
 
-        const redirectUrl= await this.urlService.getShortUrl(shorturl,payload.userid,payload.region)
+        const redirectUrl= await this.urlService.getShortUrl(shorturl,payload.userid)
         return res.redirect(redirectUrl)
     }
 

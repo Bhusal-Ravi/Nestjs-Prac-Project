@@ -1,26 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Stats } from './stats.entity';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class StatsService {
   constructor(
-    @Inject('STATS_REPOSITORY')
-    private readonly statsRepository: Repository<Stats>,
-
-    @Inject('USA_STATS_REPOSITORY')
-    private readonly usaStatsRepository: Repository<Stats>,
+    private readonly databaseService: DatabaseService,
   ) {}
 
-  private getStatsRepository(region?: string) {
-    return region === 'usa' ? this.usaStatsRepository : this.statsRepository;
-  }
+  
 
   async getStats(user_id: number, url_id: number, region?: string): Promise<Stats | null> {
     // console.log(user_id,url_id)
-    const repository = this.getStatsRepository(region)
+    if(!region) throw new BadRequestException('Provide all required fields')
 
-    const stats = await repository.findOne({
+     const statsRepository =
+          this.databaseService.getEntityRepository(
+            
+            Stats,
+          );
+
+    const stats = await statsRepository.findOne({
       where: {
         user: { id: user_id },
         url: { id: url_id },
@@ -32,10 +33,16 @@ export class StatsService {
     return stats;
   }
 
-  async updateStats(user_id: number, url_id: number, region?: string) {
-    const repository = this.getStatsRepository(region)
+  async updateStats(user_id: number, url_id: number, ) {
+  
 
-    const updateStats = await repository
+    const statsRepository =
+          this.databaseService.getEntityRepository(
+            
+            Stats,
+          );
+
+    const updateStats = await statsRepository
       .createQueryBuilder()
       .update(Stats)
       .set({ count: () => 'count + 1' })
@@ -48,10 +55,17 @@ export class StatsService {
     console.log(updateStats);
   }
 
-  async setStats(user_id: number, url_id: number, region?: string) {
-    const repository = this.getStatsRepository(region)
+  async setStats(user_id: number, url_id: number) {
+    
+   
 
-    const setStats = await repository
+    const statsRepository =
+          this.databaseService.getEntityRepository(
+            
+            Stats,
+          );
+
+    const setStats = await statsRepository
       .createQueryBuilder()
       .insert()
       .into(Stats)

@@ -38,7 +38,7 @@ export class StatsController {
                 const url_id= body.url_id
 
                 
-            const update= await this.statsService.updateStats(user_id,url_id,payload.region)
+            const update= await this.statsService.updateStats(user_id,url_id)
 
             console.log(update)
             return res.json({success:true})
@@ -53,7 +53,7 @@ export class StatsController {
          const user_id= payload.userid
          const url_id= body.url_id
 
-         const set= await this.statsService.setStats(user_id,url_id,payload.region)
+         const set= await this.statsService.setStats(user_id,url_id)
          return res.json(set)
     }
 
