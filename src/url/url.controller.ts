@@ -6,7 +6,8 @@ type AuthRequest = Request &  {
     payload?:{
         username:string,
         userid:number,
-        region:string
+        region:string,
+        
     }
 }
 
@@ -15,7 +16,7 @@ export class UrlController {
     constructor(private readonly  urlService:UrlService) {}
 
     @Post('/shorten')
-    async shorten(@Body() body:{url:string},@Res() res:Response, @Req() req:AuthRequest){
+    async shorten(@Body() body:{url:string,locationId:number},@Res() res:Response, @Req() req:AuthRequest){
 
         const payload= req.payload
         if(!payload || !payload.userid || !payload.username) throw new BadRequestException("Provide necessary information")
@@ -29,7 +30,8 @@ export class UrlController {
         }
         const originalUrl= body.url
         const fullUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl}`
-        const shortUrl=  await this.urlService.shortenUrl(fullUrl,payload.userid)
+        
+        const shortUrl=  await this.urlService.shortenUrl(fullUrl,payload.userid,body.locationId)
          console.log(shortUrl)
 
         return res.json({shortUrl:`http://localhost:3000/${shortUrl}`})

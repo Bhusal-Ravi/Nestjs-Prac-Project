@@ -1,3 +1,4 @@
+import { Location } from "src/location/location.entity"
 import { Stats } from "src/stats/stats.entity"
 import { User } from "src/user/user.entity"
 import { Entity, PrimaryGeneratedColumn, Column, ForeignKey, ManyToOne, JoinColumn, OneToOne } from "typeorm"
@@ -12,6 +13,9 @@ export class Url {
 
     @Column()
     shortUrl!: string
+
+    @ManyToOne(()=>Location,(location)=>location.urls)
+    location!:Location
 
     @OneToOne(()=>Stats,(stats)=>stats.url)
     stats!:Stats

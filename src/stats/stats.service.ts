@@ -5,21 +5,16 @@ import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class StatsService {
-  constructor(
-    private readonly databaseService: DatabaseService,
-  ) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  
+  async getStats(
+    user_id: number,
+    url_id: number,
+    region?: string,
+  ): Promise<Stats | null> {
+    if (!region) throw new BadRequestException('Provide all required fields');
 
-  async getStats(user_id: number, url_id: number, region?: string): Promise<Stats | null> {
-    // console.log(user_id,url_id)
-    if(!region) throw new BadRequestException('Provide all required fields')
-
-     const statsRepository =
-          this.databaseService.getEntityRepository(
-            
-            Stats,
-          );
+    const statsRepository = this.databaseService.getEntityRepository(Stats);
 
     const stats = await statsRepository.findOne({
       where: {
@@ -33,14 +28,8 @@ export class StatsService {
     return stats;
   }
 
-  async updateStats(user_id: number, url_id: number, ) {
-  
-
-    const statsRepository =
-          this.databaseService.getEntityRepository(
-            
-            Stats,
-          );
+  async updateStats(user_id: number, url_id: number) {
+    const statsRepository = this.databaseService.getEntityRepository(Stats);
 
     const updateStats = await statsRepository
       .createQueryBuilder()
@@ -56,14 +45,7 @@ export class StatsService {
   }
 
   async setStats(user_id: number, url_id: number) {
-    
-   
-
-    const statsRepository =
-          this.databaseService.getEntityRepository(
-            
-            Stats,
-          );
+    const statsRepository = this.databaseService.getEntityRepository(Stats);
 
     const setStats = await statsRepository
       .createQueryBuilder()

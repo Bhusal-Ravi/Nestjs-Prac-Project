@@ -8,13 +8,10 @@ import { DatabaseModule } from 'src/database/database.module';
   imports: [DatabaseModule],
   controllers: [StatsController],
   providers: [StatsService],
-  exports: [StatsService]
+  exports: [StatsService],
 })
 export class StatsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-    .apply (StatsMiddleware)
-    .forRoutes(StatsController)
+    consumer.apply(StatsMiddleware).forRoutes(StatsController);
   }
-
 }

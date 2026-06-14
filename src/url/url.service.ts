@@ -19,10 +19,10 @@ export class UrlService {
     //     this.urls[shortUrl]=originlUrl
     //     return shortUrl }
 
-    async shortenUrl(originalUrl:string,userid:number){
+    async shortenUrl(originalUrl:string,userid:number,locationId:number){
             const shortUrl= Math.random().toString(36).substring(2,8)
             
-
+            console.log(locationId,"locationID")
             const urlRepository =
                   this.databaseService.getEntityRepository(              
                     Url,
@@ -31,11 +31,14 @@ export class UrlService {
             const insert= await  urlRepository.save({
                 originalUrl,
                 shortUrl:`${shortUrl}`,
+                location: {
+                    id:locationId
+                },
                 user:{
                     id:userid
                 },
             })
-
+            console.log(insert)
             const url_id= insert.id
             const setStats= await this.statsService.setStats(userid,url_id)
             console.log(setStats)

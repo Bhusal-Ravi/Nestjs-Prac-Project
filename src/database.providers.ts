@@ -4,6 +4,7 @@ import { Url } from './url/url.entity';
 import { User } from './user/user.entity';
 import { Stats } from './stats/stats.entity';
 import { Provider } from '@nestjs/common';
+import { Location } from './location/location.entity';
 
 
 const regionConfigs = [
@@ -42,7 +43,7 @@ export const databaseProviders: Provider[] = [
           username: config.username,
           password: config.password,
           database: config.database,
-          entities: [Url, User, Stats],
+          entities: [Url, User, Stats,Location],
           synchronize: true,
         });
 

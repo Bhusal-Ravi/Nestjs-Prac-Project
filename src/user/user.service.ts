@@ -17,7 +17,7 @@ export class UserService {
 
     async setUser({username,password,region}:{username:string,password:string,region:string}){
 
-    const password_hash = await bcrypt.hash(password,10)
+    const password_hash = await bcrypt.hash(password,10) 
 
 
     const userRepository =
@@ -27,7 +27,7 @@ export class UserService {
 
 
 
-        const createUser= await userRepository.insert({
+        const createUser= await userRepository.insert( {
                                     username:username,
                                     password:password_hash
        }

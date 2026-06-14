@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -14,14 +14,21 @@ export class UrlMiddleware implements NestMiddleware {
     if(!req.cookies.sessionToken) throw new UnauthorizedException("Not authorized to perform this action")
 
     const sessionToken= req.cookies.sessionToken
-            
-            const payload= jwt.verify(sessionToken,process.env.SECRET_KEY)
+
+    const secretKey = process.env.SECRET_KEY
+
+    if (!secretKey) {
+      throw new UnauthorizedException('JWT secret is not configured')
+    }
+
+    const payload = jwt.verify(sessionToken, secretKey)
     
-            if(!payload) throw new  UnauthorizedException( 'Not authozied to perform this action')
+    if (!payload || typeof payload === 'string') {
+      throw new UnauthorizedException('Not authozied to perform this action')
+    }
     
-            
-            req.payload=payload
-            req.region=payload.region
+    req.payload = payload as JwtPayload
+    req.region = (payload as JwtPayload).region
 
     next();
   }
