@@ -79,5 +79,46 @@ export class UrlService {
 
             return redirectUrl.originalUrl;
         }
+
+        async bulkData(bulkdata:{userId:number,data:{url:string,locationId:number}[]}){
+            const urlRepository =
+                  this.databaseService.getEntityRepository(                     
+                    Url,
+                  );
+
+                let urlArray={}
+            if(!bulkdata) throw new BadRequestException('Provide required data at bulk url data insert')
+            
+            if(!Array.isArray(bulkdata.data)) throw new BadRequestException('Data needs to be an array')
+           
+                
+                const data= bulkdata.data
+                const userId=bulkdata.userId
+
+                await Promise.all(
+             data.map(async (item,index)=>{
+                const shortUrl= Math.random().toString(36).substring(2,8)
+
+                const insert= await  urlRepository.save({
+                originalUrl:item.url,
+                shortUrl:`${shortUrl}`,
+                location: {
+                    id:item.locationId
+                },
+                user:{
+                    id:userId
+                },
+            })
+
+            const url_id= insert.id
+            const setStats= await this.statsService.setStats(userId,url_id)
+            urlArray[shortUrl]=item.url
+
+            })
+        )
+            
+            return urlArray
+
+        }
     
 }

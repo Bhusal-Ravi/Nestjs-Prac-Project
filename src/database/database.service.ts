@@ -19,7 +19,7 @@ export class DatabaseService {
     
     entity: EntityTarget<T>,
   ): Repository<T> {
-    const region= this.request.region
+    const region= this.request.region ||'usa'
     if (!region) throw new BadRequestException('Region not found in request');
     const ds = this.dataSourceMap.get(region);
 
@@ -28,4 +28,13 @@ export class DatabaseService {
     }
     return ds.getRepository(entity);
   }
+          
+    async insertlocaton(location:{}){
+          
+    }
+
+    
+
+
+
 }

@@ -19,6 +19,9 @@ export class Location{
     })
     type!:'country'| 'state'|'county'|'city';
 
+    @Column({ type: 'json', nullable: true })
+    coordinates!: object | null;
+
     @OneToMany(()=>Url,(url)=>url.location)
     urls!:Url[]
 
@@ -27,7 +30,7 @@ export class Location{
 
     @TreeChildren()
     children!: Location[]
-
+    
 
 
 

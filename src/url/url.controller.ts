@@ -55,5 +55,15 @@ export class UrlController {
         return res.redirect(redirectUrl)
     }
 
+    @Post('/bulkdata')
+    async bulkdata(@Body() body:{url:string,locationId:number}[],@Res() res:Response, @Req() req:AuthRequest){
+        const payload= req.payload
+        if(!payload || !payload.userid || !payload.username) throw new BadRequestException("Provide necessary information")
+        
+        
+        const bulkInsert= await this.urlService.bulkData({userId:payload.userid,data:body})
+        return res.json(bulkInsert)
+    }
+
 
 }

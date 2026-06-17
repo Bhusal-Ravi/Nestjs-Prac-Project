@@ -3,6 +3,10 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "assets": [
+      "location/seed-coordinates.json",
+      "location/seed-ny-counties.json"
+    ]
   }
 }
